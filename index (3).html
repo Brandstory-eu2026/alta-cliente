@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alta Nuevo Cliente — Brandstory</title>
+  <meta name="description" content="Formulario de alta de nuevo cliente de Brandstory S.L.U." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+
+  <!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  CONFIGURACIÓN — SOLO PARA IT                               ║
+  ║  Ver documento: Instrucciones_IT_Brandstory_AltaCliente.docx ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  PASO A — EmailJS (envío de email)                          ║
+  ║  1. Cuenta en emailjs.com                                   ║
+  ║  2. Add Service → conectar invoice@brandstory.eu            ║
+  ║  3. Email Templates → cuerpo: {{{contenido_html}}}          ║
+  ║  4. Sustituir EMAILJS_PUBLIC_KEY, SERVICE_ID, TEMPLATE_ID   ║
+  ║                                                             ║
+  ║  PASO B — Google Apps Script (guardado en Sheets)           ║
+  ║  1. Crear Google Sheet "Altas Clientes Brandstory"          ║
+  ║  2. Extensions → Apps Script → pegar script del .docx       ║
+  ║  3. Deploy → Web App → Anyone → copiar URL                  ║
+  ║  4. Sustituir SHEETS_SCRIPT_URL                             ║
+  ║                                                             ║
+  ║  PASO C — GitHub Pages (publicar)                           ║
+  ║  1. Nuevo repositorio público en github.com                 ║
+  ║  2. Subir este index.html                                   ║
+  ║  3. Settings → Pages → Branch main → Save                  ║
+  ║  4. URL resultante: https://[usuario].github.io/[repo]      ║
+  ╚══════════════════════════════════════════════════════════════╝
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    const EMAILJS_PUBLIC_KEY  = 'X33JaBeBrDWByhwPm';     // ← sustituir
+    const EMAILJS_SERVICE_ID  = 'service_z5cnxd8';     // ← sustituir
+    const EMAILJS_TEMPLATE_ID = 'template_v0t9r6t';    // ← sustituir
+    const DESTINO_EMAIL       = 'invoice@brandstory.eu';
+    const SHEETS_SCRIPT_URL   = 'TU_APPS_SCRIPT_URL';   // ← IT: sustituir con la URL del Apps Script
+
+    (function(){ emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); })();
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0D0D0D;
+      --gray-dark:  #2C2C2C;
+      --gray-mid:   #6B6B6B;
+      --gray-light: #E0E0DC;
+      --gray-fill:  #F7F7F5;
+      --white:      #FFFFFF;
+      --page-bg:    #F2F2EF;
+      --radius:     7px;
+      --font:       'DM Sans', sans-serif;
+      --font-serif: 'DM Serif Display', serif;
+      --shadow:     0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--page-bg);
+      color: var(--black);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SHELL ── */
+    .shell {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo-mark {
+      width: 42px; height: 42px;
+      background: var(--black);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-mark span {
+      color: white;
+      font-family: var(--font-serif);
+      font-size: 26px;
+      line-height: 1;
+      margin-top: 2px;
+    }
+    .header-title   { font-size: 15px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .header-sub     { font-size: 12px; color: var(--gray-mid); margin-top: 2px; }
+    .header-contact { text-align: right; font-size: 11px; color: var(--gray-mid); line-height: 1.7; }
+    .header-contact a { color: var(--gray-mid); text-decoration: none; }
+    .header-contact a:hover { color: var(--black); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1.5px;
+      background: var(--black);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { margin-bottom: 2rem; }
+    .progress-steps {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .progress-step {
+      flex: 1; height: 3px;
+      background: var(--gray-light);
+      border-radius: 2px;
+      transition: background 0.35s ease;
+    }
+    .progress-step.done   { background: var(--black); }
+    .progress-step.active { background: var(--gray-dark); }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--gray-mid);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.75rem 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 4px;
+    }
+    .section-heading {
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--black);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 0.5px solid var(--gray-light);
+    }
+
+    /* ── FORM GRID ── */
+    .form-grid   { display: grid; grid-template-columns: 1fr 1fr;       gap: 1rem 1.25rem; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr;   gap: 1rem 1.25rem; }
+    .full        { grid-column: 1 / -1; }
+
+    @media (max-width: 500px) {
+      .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+      .card { padding: 1.25rem 1.1rem; }
+      .header-contact { display: none; }
+    }
+
+    /* ── FIELD ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gray-mid);
+      letter-spacing: 0.03em;
+    }
+    .field label .req { color: #C0392B; margin-left: 2px; }
+    .field input,
+    .field textarea,
+    .field select {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--black);
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 10px 13px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #BCBCB8; }
+    .field input:hover,
+    .field textarea:hover { border-color: #BCBCB8; }
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--black);
+      box-shadow: 0 0 0 3px rgba(13,13,13,0.07);
+    }
+    .field input.error,
+    .field textarea.error { border-color: #C0392B; }
+    .field textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+    .field .hint { font-size: 11px; color: var(--gray-mid); line-height: 1.5; }
+    .field .error-msg { font-size: 11px; color: #C0392B; display: none; }
+    .field.has-error .error-msg { display: block; }
+    .field.has-error input,
+    .field.has-error textarea { border-color: #C0392B; }
+
+    /* ── CHECKBOX PILL ── */
+    .checkbox-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: var(--gray-fill);
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s;
+    }
+    .checkbox-pill:hover { border-color: #BCBCB8; }
+    .checkbox-pill input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--black);
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0; border: none; background: none;
+    }
+    .checkbox-pill span { font-size: 13px; color: var(--gray-dark); line-height: 1.4; }
+
+    /* ── CONTACT TABLE ── */
+    .contact-table {
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .contact-head {
+      display: grid;
+      grid-template-columns: 120px 1fr 1fr;
+      background: var(--black);
+    }
+    .contact-head span {
+      padding: 9px 12px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+    .contact-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 1fr;
+      border-top: 1px solid var(--gray-light);
+    }
+    .contact-row:nth-child(even) { background: var(--gray-fill); }
+    .contact-area {
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-dark);
+      display: flex; align-items: center;
+      border-right: 1px solid var(--gray-light);
+    }
+    .contact-cell {
+      border-right: 1px solid var(--gray-light);
+    }
+    .contact-cell:last-child { border-right: none; }
+    .contact-cell input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--black);
+      padding: 11px 12px;
+      outline: none;
+    }
+    .contact-cell input:focus { background: rgba(13,13,13,0.03); }
+    @media (max-width: 500px) {
+      .contact-head { display: none; }
+      .contact-row  { grid-template-columns: 1fr; }
+      .contact-area { border-right: none; border-bottom: 1px solid var(--gray-light); padding: 8px 12px; background: var(--gray-fill); }
+      .contact-cell { border-right: none; border-bottom: 1px solid var(--gray-light); }
+      .contact-cell:last-child { border-bottom: none; }
+    }
+
+    /* ── PAYMENT BADGES ── */
+    .badge-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .badge {
+      padding: 8px 16px;
+      border: 1px solid var(--gray-light);
+      border-radius: 99px;
+      font-size: 13px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--white);
+      color: var(--gray-dark);
+      user-select: none;
+    }
+    .badge:hover    { border-color: var(--gray-dark); }
+    .badge.selected { background: var(--black); color: white; border-color: var(--black); }
+
+    /* ── TOGGLE ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 14px;
+      background: var(--gray-fill);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-light);
+      gap: 1rem;
+    }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .toggle-sub   { font-size: 11px; color: var(--gray-mid); margin-top: 3px; line-height: 1.4; }
+    .toggle       { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--gray-light); border-radius: 99px;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle input:checked + .toggle-slider              { background: var(--black); }
+    .toggle input:checked + .toggle-slider::before      { transform: translateX(18px); }
+
+    /* ── RESUMEN ── */
+    .summary-block {
+      background: var(--gray-fill);
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .summary-block h4 {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gray-mid);
+      margin-bottom: 0.6rem;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 13px;
+      padding: 5px 0;
+      border-bottom: 0.5px solid var(--gray-light);
+      gap: 1rem;
+    }
+    .summary-row:last-child       { border-bottom: none; }
+    .summary-row span:first-child { color: var(--gray-mid); flex-shrink: 0; }
+    .summary-row span:last-child  { font-weight: 500; text-align: right; }
+    .privacy-note {
+      font-size: 11.5px;
+      color: var(--gray-mid);
+      line-height: 1.6;
+      padding: 12px 14px;
+      background: var(--gray-fill);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-light);
+    }
+
+    /* ── NAV ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+    }
+    .step-dot { font-size: 12px; color: var(--gray-mid); }
+    .btn {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 11px 24px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+      letter-spacing: 0.01em;
+    }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--gray-light);
+      color: var(--gray-mid);
+    }
+    .btn-ghost:hover { border-color: var(--gray-dark); color: var(--black); }
+    .btn-primary {
+      background: var(--black);
+      color: white;
+      border-color: var(--black);
+    }
+    .btn-primary:hover   { background: var(--gray-dark); }
+    .btn-primary:active  { transform: scale(0.98); }
+    .btn-primary:disabled {
+      background: var(--gray-light);
+      border-color: var(--gray-light);
+      color: var(--gray-mid);
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-ghost.hidden { visibility: hidden; }
+
+    /* ── SPINNER ── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SUCCESS ── */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    .success-screen.active { display: block; }
+    .success-icon {
+      width: 60px; height: 60px;
+      background: var(--black);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .success-icon svg { width: 26px; height: 26px; }
+    .success-screen h2 { font-size: 24px; font-weight: 500; margin-bottom: 0.75rem; }
+    .success-screen p  { font-size: 14px; color: var(--gray-mid); line-height: 1.7; max-width: 380px; margin: 0 auto; }
+    .success-screen p + p { margin-top: 0.75rem; }
+
+    /* ── SECTION ANIMATION ── */
+    .section { display: none; animation: fadeUp 0.28s ease; }
+    .section.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark"><span>B</span></div>
+      <div>
+        <div class="header-title">Alta nuevo cliente</div>
+        <div class="header-sub">Brandstory S.L.U. · CIF B02795300</div>
+      </div>
+    </div>
+    <div class="header-contact">
+      <a href="mailto:invoice@brandstory.eu">invoice@brandstory.eu</a><br>
+      <a href="mailto:orders@brandstory.eu">orders@brandstory.eu</a>
+    </div>
+  </header>
+  <div class="divider"></div>
+
+  <!-- PROGRESO -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-steps" id="progress-bar">
+      <div class="progress-step active"  id="ps-0"></div>
+      <div class="progress-step"         id="ps-1"></div>
+      <div class="progress-step"         id="ps-2"></div>
+      <div class="progress-step"         id="ps-3"></div>
+      <div class="progress-step"         id="ps-4"></div>
+    </div>
+    <div class="progress-labels">
+      <span>Datos fiscales</span>
+      <span>Entrega</span>
+      <span>Contactos</span>
+      <span>Pago</span>
+      <span>Confirmar</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 0 – DATOS FISCALES
+  ══════════════════════════════════════ -->
+  <div class="section active" id="step-0">
+    <div class="card">
+      <div class="section-eyebrow">Paso 1 de 5</div>
+      <div class="section-heading">Datos fiscales</div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <div class="field full">
+          <label>Nombre o razón social <span class="req">*</span></label>
+          <input type="text" id="razon_social" placeholder="Nombre del negocio o persona física" autocomplete="organization" />
+          <span class="error-msg">Este campo es obligatorio</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>CIF / NIF <span class="req">*</span></label>
+            <input type="text" id="cif" placeholder="B12345678" autocomplete="off" />
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+          <div class="field">
+            <label>Teléfono <span class="req">*</span></label>
+            <input type="tel" id="tel_fiscal" placeholder="600 000 000" autocomplete="tel" />
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Dirección fiscal <span class="req">*</span></label>
+          <input type="text" id="dir_fiscal" placeholder="Calle, número, piso..." autocomplete="street-address" />
+          <span class="error-msg">Este campo es obligatorio</span>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="field">
+            <label>Código postal <span class="req">*</span></label>
+            <input type="text" id="cp_fiscal" placeholder="28000" maxlength="5" inputmode="numeric" autocomplete="postal-code" />
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+          <div class="field">
+            <label>Población <span class="req">*</span></label>
+            <input type="text" id="pobl_fiscal" placeholder="Madrid" autocomplete="address-level2" />
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+          <div class="field">
+            <label>Provincia</label>
+            <input type="text" id="prov_fiscal" placeholder="Madrid" autocomplete="address-level1" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 1 – DIRECCIÓN DE ENTREGA
+  ══════════════════════════════════════ -->
+  <div class="section" id="step-1">
+    <div class="card">
+      <div class="section-eyebrow">Paso 2 de 5</div>
+      <div class="section-heading">Dirección de entrega</div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <label class="checkbox-pill">
+          <input type="checkbox" id="same_address" onchange="toggleSameAddress(this)" />
+          <span>La dirección de entrega es la misma que la fiscal</span>
+        </label>
+
+        <div id="delivery-fields" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="field">
+            <label>Dirección de entrega <span class="req">*</span></label>
+            <input type="text" id="dir_entrega" placeholder="Calle, número, piso..." autocomplete="shipping street-address" />
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label>Código postal <span class="req">*</span></label>
+              <input type="text" id="cp_entrega" placeholder="28000" maxlength="5" inputmode="numeric" />
+              <span class="error-msg">Este campo es obligatorio</span>
+            </div>
+            <div class="field">
+              <label>Población <span class="req">*</span></label>
+              <input type="text" id="pobl_entrega" placeholder="Madrid" />
+              <span class="error-msg">Este campo es obligatorio</span>
+            </div>
+            <div class="field">
+              <label>Provincia</label>
+              <input type="text" id="prov_entrega" placeholder="Madrid" />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Teléfono de entrega</label>
+              <input type="tel" id="tel_entrega" placeholder="600 000 000" />
+            </div>
+            <div class="field">
+              <label>Horario de recepción</label>
+              <input type="text" id="horario" placeholder="Ej: L–V de 9:00 a 14:00" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Condiciones especiales de entrega</label>
+          <textarea id="condiciones" placeholder="Escribe aquí cualquier indicación importante para la entrega:&#10;&#10;Ej: solo se puede entregar con furgoneta, avisar antes de llegar, solicitar cita previa, no entregar paletizado, preguntar por María en recepción..."></textarea>
+          <span class="hint">Esta información quedará registrada en tu ficha y la tendrán en cuenta todos los pedidos.</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 2 – CONTACTOS
+  ══════════════════════════════════════ -->
+  <div class="section" id="step-2">
+    <div class="card">
+      <div class="section-eyebrow">Paso 3 de 5</div>
+      <div class="section-heading">Personas de contacto</div>
+      <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;line-height:1.6;">
+        Indica a quién debemos dirigirnos en cada área. Deja en blanco las que no apliquen.
+      </p>
+
+      <div class="contact-table">
+        <div class="contact-head">
+          <span>Área</span>
+          <span>Nombre</span>
+          <span>Teléfono / Email</span>
+        </div>
+        <div class="contact-row">
+          <div class="contact-area">Comercial</div>
+          <div class="contact-cell"><input type="text"  id="com_nom"   placeholder="Nombre y apellidos" /></div>
+          <div class="contact-cell"><input type="text"  id="com_tel"   placeholder="Teléfono o email" /></div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-area">Financiero</div>
+          <div class="contact-cell"><input type="text"  id="fin_nom"   placeholder="Nombre y apellidos" /></div>
+          <div class="contact-cell"><input type="email" id="fin_email" placeholder="Email de facturación" /></div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-area">Logística</div>
+          <div class="contact-cell"><input type="text"  id="log_nom"   placeholder="Nombre y apellidos" /></div>
+          <div class="contact-cell"><input type="text"  id="log_tel"   placeholder="Teléfono o email" /></div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-area">Pedidos</div>
+          <div class="contact-cell"><input type="text"  id="ped_nom"   placeholder="Nombre y apellidos" /></div>
+          <div class="contact-cell"><input type="email" id="ped_email" placeholder="Email de pedidos" /></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 3 – DATOS BANCARIOS
+  ══════════════════════════════════════ -->
+  <div class="section" id="step-3">
+    <div class="card">
+      <div class="section-eyebrow">Paso 4 de 5</div>
+      <div class="section-heading">Datos bancarios y forma de pago</div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <div class="field">
+          <label>IBAN</label>
+          <input type="text" id="iban" placeholder="ES00 0000 0000 0000 0000 0000" autocomplete="off" />
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Banco</label>
+            <input type="text" id="banco" placeholder="Nombre del banco" />
+          </div>
+          <div class="field">
+            <label>SWIFT / BIC</label>
+            <input type="text" id="swift" placeholder="CAIXESBBXXX" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Forma de pago</label>
+          <div style="padding:10px 13px;background:var(--gray-fill);border:1px solid var(--gray-light);border-radius:var(--radius);font-size:14px;color:var(--black);font-weight:500;">
+            Giro 30 días
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Días específicos de pago</label>
+            <input type="text" id="dias_pago" placeholder="Ej: 5 y 20 de cada mes" />
+          </div>
+          <div class="field">
+            <label>Plazo (días)</label>
+            <input type="number" id="plazo" placeholder="60" min="0" max="365" />
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Recargo de equivalencia</div>
+            <div class="toggle-sub">Aplica a autónomos y minoristas en régimen especial de IVA</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="recargo" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 4 – CONFIRMAR Y ENVIAR
+  ══════════════════════════════════════ -->
+  <div class="section" id="step-4">
+    <div class="card">
+      <div class="section-eyebrow">Paso 5 de 5</div>
+      <div class="section-heading">Confirmar y enviar</div>
+      <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;line-height:1.6;">
+        Revisa que todo es correcto. Nuestro equipo procesará el alta en menos de 24&nbsp;h laborables.
+      </p>
+      <div id="resumen-container"></div>
+      <div class="privacy-note">
+        Al enviar este formulario, aceptas que Brandstory S.L.U. trate tus datos con el fin de gestionar la relación comercial, de acuerdo con el RGPD y la LOPD-GDD. Puedes ejercer tus derechos escribiendo a <a href="mailto:invoice@brandstory.eu" style="color:var(--black);">invoice@brandstory.eu</a>.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2>¡Alta enviada!</h2>
+    <p>Hemos recibido tu ficha. Nuestro equipo la revisará y te confirmará el alta en menos de 24&nbsp;h en el correo o teléfono que nos has indicado.</p>
+    <p style="font-size:12px;color:var(--gray-mid);margin-top:1rem;">¿Dudas? <a href="mailto:invoice@brandstory.eu" style="color:var(--black);">invoice@brandstory.eu</a></p>
+  </div>
+
+  <!-- NAVEGACIÓN -->
+  <div class="nav" id="nav-bar">
+    <button class="btn btn-ghost hidden" id="btn-back" onclick="navigate(-1)">← Atrás</button>
+    <span class="step-dot" id="step-dot">1 / 5</span>
+    <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">Siguiente →</button>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+  /* ═══════ STATE ═══════ */
+  let currentStep = 0;
+  const TOTAL = 5;
+  let formaPago = 'Giro 30 días';
+  let sending = false;
+
+  /* ═══════ NAV ═══════ */
+  function navigate(dir) {
+    if (sending) return;
+
+    if (dir === 1) {
+      if (!validateStep(currentStep)) return;
+      if (currentStep === TOTAL - 1) { submitForm(); return; }
+      if (currentStep === TOTAL - 2) buildResumen();
+    }
+
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    currentStep += dir;
+    if (currentStep < 0) currentStep = 0;
+    document.getElementById('step-' + currentStep).classList.add('active');
+    updateNav();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateNav() {
+    for (let i = 0; i < TOTAL; i++) {
+      const el = document.getElementById('ps-' + i);
+      if      (i < currentStep)  el.className = 'progress-step done';
+      else if (i === currentStep) el.className = 'progress-step active';
+      else                        el.className = 'progress-step';
+    }
+    const back = document.getElementById('btn-back');
+    back.classList.toggle('hidden', currentStep === 0);
+    const next = document.getElementById('btn-next');
+    next.textContent = currentStep === TOTAL - 1 ? 'Enviar alta ✓' : 'Siguiente →';
+    document.getElementById('step-dot').textContent = (currentStep + 1) + ' / ' + TOTAL;
+  }
+
+  /* ═══════ HELPERS ═══════ */
+  const v = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  const chk = id => { const e = document.getElementById(id); return e ? e.checked : false; };
+
+  /* ═══════ VALIDATION ═══════ */
+  const REQUIRED = {
+    0: ['razon_social','cif','tel_fiscal','dir_fiscal','cp_fiscal','pobl_fiscal'],
+    1: [], // delivery validated dynamically
+  };
+
+  function validateStep(step) {
+    let ok = true;
+    const req = REQUIRED[step] || [];
+    req.forEach(id => {
+      const el = document.getElementById(id);
+      const field = el ? el.closest('.field') : null;
+      if (el && !el.value.trim()) {
+        if (field) field.classList.add('has-error');
+        ok = false;
+      } else if (field) {
+        field.classList.remove('has-error');
+      }
+    });
+
+    if (step === 1 && !chk('same_address')) {
+      ['dir_entrega','cp_entrega','pobl_entrega'].forEach(id => {
+        const el = document.getElementById(id);
+        const field = el ? el.closest('.field') : null;
+        if (el && !el.value.trim()) {
+          if (field) field.classList.add('has-error');
+          ok = false;
+        } else if (field) {
+          field.classList.remove('has-error');
+        }
+      });
+    }
+    return ok;
+  }
+
+  /* Clear error on input */
+  document.addEventListener('input', e => {
+    const field = e.target.closest('.field');
+    if (field && field.classList.contains('has-error') && e.target.value.trim()) {
+      field.classList.remove('has-error');
+    }
+  });
+
+  /* ═══════ SAME ADDRESS TOGGLE ═══════ */
+  function toggleSameAddress(cb) {
+    document.getElementById('delivery-fields').style.display = cb.checked ? 'none' : 'flex';
+  }
+
+  /* ═══════ PAYMENT BADGES ═══════ */
+  // Forma de pago fija: Giro 30 días
+
+  /* ═══════ RESUMEN ═══════ */
+  function buildResumen() {
+    const sameAddr = chk('same_address');
+    const deliveryRows = sameAddr
+      ? [['Dirección de entrega','Igual que la fiscal']]
+      : [
+          ['Dirección', [v('dir_entrega'),v('cp_entrega'),v('pobl_entrega')].filter(Boolean).join(', ')],
+          ['Teléfono entrega', v('tel_entrega') || '—'],
+          ['Horario', v('horario') || '—'],
+          ['Condiciones especiales', v('condiciones') || '—'],
+        ];
+
+    const sections = [
+      { title: 'Datos fiscales', rows: [
+        ['Razón social', v('razon_social')],
+        ['CIF / NIF',    v('cif')],
+        ['Dirección',    [v('dir_fiscal'),v('cp_fiscal'),v('pobl_fiscal'),v('prov_fiscal')].filter(Boolean).join(', ')],
+        ['Teléfono',     v('tel_fiscal')],
+      ]},
+      { title: 'Dirección de entrega', rows: deliveryRows },
+      { title: 'Contactos', rows: [
+        ['Comercial',  [v('com_nom'), v('com_tel')].filter(Boolean).join(' · ') || '—'],
+        ['Financiero', [v('fin_nom'), v('fin_email')].filter(Boolean).join(' · ') || '—'],
+        ['Logística',  [v('log_nom'), v('log_tel')].filter(Boolean).join(' · ') || '—'],
+        ['Pedidos',    [v('ped_nom'), v('ped_email')].filter(Boolean).join(' · ') || '—'],
+      ]},
+      { title: 'Pago', rows: [
+        ['Forma de pago', formaPago],
+        ['IBAN',          v('iban') || '—'],
+        ['Banco',         v('banco') || '—'],
+        ['Plazo',         v('plazo') ? v('plazo') + ' días' : '—'],
+        ['Días de pago',  v('dias_pago') || '—'],
+        ['Rec. equivalencia', chk('recargo') ? 'Sí' : 'No'],
+      ]},
+    ];
+
+    let html = '';
+    sections.forEach(s => {
+      html += '<div class="summary-block"><h4>' + s.title + '</h4>';
+      s.rows.forEach(r => {
+        if (r[1]) html += '<div class="summary-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+      });
+      html += '</div>';
+    });
+    document.getElementById('resumen-container').innerHTML = html;
+  }
+
+  /* ═══════ SUBMIT → EMAILJS ═══════ */
+  function submitForm() {
+    if (sending) return;
+    sending = true;
+    const btn = document.getElementById('btn-next');
+    btn.innerHTML = '<span class="spinner"></span>Enviando...';
+    btn.disabled = true;
+
+    const sameAddr = chk('same_address');
+    const entregaDir = sameAddr
+      ? v('dir_fiscal') + ', ' + v('cp_fiscal') + ' ' + v('pobl_fiscal')
+      : v('dir_entrega') + ', ' + v('cp_entrega') + ' ' + v('pobl_entrega');
+
+    /* Construimos el HTML del email */
+    const html = `
+<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#0D0D0D;">
+  <div style="background:#0D0D0D;padding:20px 28px;border-radius:8px 8px 0 0;">
+    <span style="color:white;font-size:22px;font-weight:bold;">B</span>
+    <span style="color:white;font-size:14px;margin-left:10px;letter-spacing:2px;text-transform:uppercase;">Alta nuevo cliente</span>
+  </div>
+  <div style="padding:24px 28px;border:1px solid #E0E0DC;border-top:none;border-radius:0 0 8px 8px;">
+
+    <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Datos fiscales</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">Razón social</td><td style="font-weight:500;font-size:13px;">${v('razon_social')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">CIF / NIF</td><td style="font-weight:500;font-size:13px;">${v('cif')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Dirección fiscal</td><td style="font-weight:500;font-size:13px;">${v('dir_fiscal')}, ${v('cp_fiscal')} ${v('pobl_fiscal')} ${v('prov_fiscal')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Teléfono</td><td style="font-weight:500;font-size:13px;">${v('tel_fiscal')}</td></tr>
+    </table>
+
+    <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Dirección de entrega</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">Dirección</td><td style="font-weight:500;font-size:13px;">${entregaDir}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Teléfono entrega</td><td style="font-weight:500;font-size:13px;">${v('tel_entrega') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Horario</td><td style="font-weight:500;font-size:13px;">${v('horario') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;vertical-align:top;">Condiciones especiales</td><td style="font-weight:500;font-size:13px;background:#F7F7F5;padding:8px;border-radius:4px;">${v('condiciones') || '—'}</td></tr>
+    </table>
+
+    <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Contactos</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">Comercial</td><td style="font-size:13px;">${v('com_nom')} ${v('com_tel')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Financiero</td><td style="font-size:13px;">${v('fin_nom')} ${v('fin_email')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Logística</td><td style="font-size:13px;">${v('log_nom')} ${v('log_tel')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Pedidos</td><td style="font-size:13px;">${v('ped_nom')} ${v('ped_email')}</td></tr>
+    </table>
+
+    <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Datos bancarios y pago</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">IBAN</td><td style="font-weight:500;font-size:13px;">${v('iban') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Banco</td><td style="font-size:13px;">${v('banco') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">SWIFT</td><td style="font-size:13px;">${v('swift') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Forma de pago</td><td style="font-weight:500;font-size:13px;">${formaPago}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Plazo</td><td style="font-size:13px;">${v('plazo') ? v('plazo') + ' días' : '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Días de pago</td><td style="font-size:13px;">${v('dias_pago') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Rec. equivalencia</td><td style="font-weight:500;font-size:13px;">${chk('recargo') ? 'Sí' : 'No'}</td></tr>
+    </table>
+
+    <div style="margin-top:24px;padding:12px;background:#F7F7F5;border-radius:6px;font-size:11px;color:#6B6B6B;">
+      Enviado desde el formulario de alta de Brandstory · ${new Date().toLocaleString('es-ES')}
+    </div>
+  </div>
+</div>`;
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:       DESTINO_EMAIL,
+      subject:        'Nueva solicitud de alta — ' + v('razon_social'),
+      razon_social:   v('razon_social'),
+      contenido_html: html,
+    })
+    .then(() => {
+      // Google Sheets via Apps Script
+      const sheetsData = new FormData();
+      sheetsData.append('razon_social',  v('razon_social'));
+      sheetsData.append('cif',           v('cif'));
+      sheetsData.append('tel_fiscal',    v('tel_fiscal'));
+      sheetsData.append('dir_fiscal',    [v('dir_fiscal'),v('cp_fiscal'),v('pobl_fiscal'),v('prov_fiscal')].filter(Boolean).join(', '));
+      sheetsData.append('dir_entrega',   chk('same_address') ? 'Igual que fiscal' : [v('dir_entrega'),v('cp_entrega'),v('pobl_entrega')].filter(Boolean).join(', '));
+      sheetsData.append('tel_entrega',   v('tel_entrega'));
+      sheetsData.append('horario',       v('horario'));
+      sheetsData.append('condiciones',   v('condiciones'));
+      sheetsData.append('cont_comercial',[v('com_nom'),v('com_tel')].filter(Boolean).join(' · '));
+      sheetsData.append('cont_financiero',[v('fin_nom'),v('fin_email')].filter(Boolean).join(' · '));
+      sheetsData.append('cont_logistica',[v('log_nom'),v('log_tel')].filter(Boolean).join(' · '));
+      sheetsData.append('cont_pedidos',  [v('ped_nom'),v('ped_email')].filter(Boolean).join(' · '));
+      sheetsData.append('iban',          v('iban'));
+      sheetsData.append('banco',         v('banco'));
+      sheetsData.append('swift',         v('swift'));
+      sheetsData.append('forma_pago',    formaPago);
+      sheetsData.append('plazo',         v('plazo'));
+      sheetsData.append('dias_pago',     v('dias_pago'));
+      sheetsData.append('recargo',       chk('recargo') ? 'Sí' : 'No');
+      sheetsData.append('fecha',         new Date().toLocaleString('es-ES'));
+
+      fetch(SHEETS_SCRIPT_URL, { method: 'POST', body: sheetsData })
+        .catch(() => {}); // Si falla Sheets no bloqueamos — el email ya fue
+
+      document.getElementById('step-4').classList.remove('active');
+      document.getElementById('nav-bar').style.display = 'none';
+      document.getElementById('progress-wrap').style.display = 'none';
+      document.getElementById('success-screen').classList.add('active');
+    })
+    .catch(err => {
+      console.error('EmailJS error:', err);
+      btn.innerHTML = 'Enviar alta ✓';
+      btn.disabled = false;
+      sending = false;
+      alert('Ha habido un problema al enviar. Por favor, inténtalo de nuevo o escríbenos a invoice@brandstory.eu');
+    });
+  }
+</script>
+</body>
+</html>
