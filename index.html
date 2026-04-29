@@ -246,7 +246,7 @@
     }
     .contact-head {
       display: grid;
-      grid-template-columns: 120px 1fr 1fr;
+      grid-template-columns: 110px 1fr 1fr 1fr;
       background: var(--black);
     }
     .contact-head span {
@@ -259,7 +259,7 @@
     }
     .contact-row {
       display: grid;
-      grid-template-columns: 120px 1fr 1fr;
+      grid-template-columns: 110px 1fr 1fr 1fr;
       border-top: 1px solid var(--gray-light);
     }
     .contact-row:nth-child(even) { background: var(--gray-fill); }
@@ -288,7 +288,7 @@
     .contact-cell input:focus { background: rgba(13,13,13,0.03); }
     @media (max-width: 500px) {
       .contact-head { display: none; }
-      .contact-row  { grid-template-columns: 1fr; }
+      .contact-row  { grid-template-columns: 1fr 1fr; }
       .contact-area { border-right: none; border-bottom: 1px solid var(--gray-light); padding: 8px 12px; background: var(--gray-fill); }
       .contact-cell { border-right: none; border-bottom: 1px solid var(--gray-light); }
       .contact-cell:last-child { border-bottom: none; }
@@ -465,6 +465,84 @@
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+
+
+    /* ── FIRMA CLIENTE ── */
+    .sig-wrap {
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    #sig-canvas {
+      display: block;
+      width: 100%;
+      height: 160px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .sig-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-top: 0.5px solid var(--gray-light);
+      background: var(--gray-fill);
+    }
+    .sig-hint-text { font-size: 11px; color: var(--gray-mid); }
+    .sig-clear-btn {
+      font-family: var(--font);
+      font-size: 12px;
+      color: var(--gray-mid);
+      background: none;
+      border: 0.5px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 4px 12px;
+      cursor: pointer;
+    }
+    .sig-clear-btn:hover { color: var(--black); border-color: var(--gray-dark); }
+    .sig-placeholder-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 13px;
+      color: var(--gray-light);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* ── LOPD ── */
+    .lopd-box {
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      background: var(--gray-fill);
+    }
+    .lopd-check {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+    .lopd-check input[type="checkbox"] {
+      width: 18px; height: 18px;
+      accent-color: var(--black);
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+    .lopd-text {
+      font-size: 12px;
+      color: var(--gray-dark);
+      line-height: 1.6;
+    }
+    .lopd-text strong { color: var(--black); }
+    .lopd-error { font-size: 11px; color: #C0392B; display: none; margin-top: 6px; }
+
   </style>
 </head>
 <body>
@@ -495,10 +573,12 @@
       <div class="progress-step"         id="ps-2"></div>
       <div class="progress-step"         id="ps-3"></div>
       <div class="progress-step"         id="ps-4"></div>
+      <div class="progress-step"         id="ps-5"></div>
     </div>
     <div class="progress-labels">
       <span>Datos fiscales</span>
       <span>Entrega</span>
+      <span>Comercial</span>
       <span>Contactos</span>
       <span>Pago</span>
       <span>Confirmar</span>
@@ -510,7 +590,7 @@
   ══════════════════════════════════════ -->
   <div class="section active" id="step-0">
     <div class="card">
-      <div class="section-eyebrow">Paso 1 de 5</div>
+      <div class="section-eyebrow">Paso 1 de 6</div>
       <div class="section-heading">Datos fiscales</div>
       <div style="display:flex;flex-direction:column;gap:1rem;">
 
@@ -523,14 +603,21 @@
         <div class="form-grid">
           <div class="field">
             <label>CIF / NIF <span class="req">*</span></label>
-            <input type="text" id="cif" placeholder="B12345678" autocomplete="off" />
-            <span class="error-msg">Este campo es obligatorio</span>
+            <input type="text" id="cif" placeholder="B12345678" autocomplete="off"
+              oninput="this.value=this.value.toUpperCase()" maxlength="9" />
+            <span class="error-msg" id="err-cif">Formato incorrecto (ej: B12345678 o 12345678A)</span>
           </div>
           <div class="field">
             <label>Teléfono <span class="req">*</span></label>
-            <input type="tel" id="tel_fiscal" placeholder="600 000 000" autocomplete="tel" />
-            <span class="error-msg">Este campo es obligatorio</span>
+            <input type="tel" id="tel_fiscal" placeholder="600 000 000" autocomplete="tel"
+              inputmode="numeric" maxlength="13" />
+            <span class="error-msg" id="err-tel">Introduce un teléfono válido (9 dígitos)</span>
           </div>
+        </div>
+        <div class="field">
+          <label>Email de contacto <span class="req">*</span></label>
+          <input type="email" id="email_fiscal" placeholder="correo@empresa.com" autocomplete="email" />
+          <span class="error-msg" id="err-email">Introduce un email válido</span>
         </div>
 
         <div class="field">
@@ -565,7 +652,7 @@
   ══════════════════════════════════════ -->
   <div class="section" id="step-1">
     <div class="card">
-      <div class="section-eyebrow">Paso 2 de 5</div>
+      <div class="section-eyebrow">Paso 2 de 6</div>
       <div class="section-heading">Dirección de entrega</div>
       <div style="display:flex;flex-direction:column;gap:1rem;">
 
@@ -575,6 +662,10 @@
         </label>
 
         <div id="delivery-fields" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="field">
+            <label>Nombre del almacén / tienda</label>
+            <input type="text" id="nombre_almacen" placeholder="Ej: Almacén Central, Tienda Madrid..." />
+          </div>
           <div class="field">
             <label>Dirección de entrega <span class="req">*</span></label>
             <input type="text" id="dir_entrega" placeholder="Calle, número, piso..." autocomplete="shipping street-address" />
@@ -619,11 +710,75 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       PASO 2 – CONTACTOS
+       PASO 2 – DATOS COMERCIALES
   ══════════════════════════════════════ -->
   <div class="section" id="step-2">
     <div class="card">
-      <div class="section-eyebrow">Paso 3 de 5</div>
+      <div class="section-eyebrow">Paso 2 de 6</div>
+      <div class="section-heading">Datos comerciales</div>
+      <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;line-height:1.6;">
+        En ocasiones el nombre comercial o la dirección de la tienda difieren de los datos fiscales. Completa solo lo que sea diferente.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <div class="field">
+          <label>Nombre comercial / Nombre de la tienda</label>
+          <input type="text" id="nom_comercial" placeholder="Ej: Tienda El Rincón del Animal" />
+          <span class="hint">Si el nombre de la tienda es distinto a la razón social, indícalo aquí.</span>
+        </div>
+
+        <label class="checkbox-pill">
+          <input type="checkbox" id="same_comercial" onchange="toggleSameCom(this)" />
+          <span>La dirección comercial es la misma que la fiscal</span>
+        </label>
+
+        <div id="comercial-fields" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="field">
+            <label>Dirección comercial</label>
+            <input type="text" id="dir_comercial" placeholder="Calle, número, piso..." />
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label>Código postal</label>
+              <input type="text" id="cp_comercial" placeholder="28000" maxlength="5" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label>Población</label>
+              <input type="text" id="pobl_comercial" placeholder="Madrid" />
+            </div>
+            <div class="field">
+              <label>Provincia</label>
+              <input type="text" id="prov_comercial" placeholder="Madrid" />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Teléfono comercial</label>
+              <input type="tel" id="tel_comercial" placeholder="600 000 000" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label>Email comercial</label>
+              <input type="email" id="email_comercial" placeholder="tienda@ejemplo.com" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Web / Redes sociales</label>
+          <input type="text" id="web_comercial" placeholder="www.ejemplo.com  ·  @instagram" />
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       PASO 2 – CONTACTOS
+  ══════════════════════════════════════ -->
+  <div class="section" id="step-3">
+    <div class="card">
+      <div class="section-eyebrow">Paso 3 de 6</div>
       <div class="section-heading">Personas de contacto</div>
       <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;line-height:1.6;">
         Indica a quién debemos dirigirnos en cada área. Deja en blanco las que no apliquen.
@@ -633,27 +788,32 @@
         <div class="contact-head">
           <span>Área</span>
           <span>Nombre</span>
-          <span>Teléfono / Email</span>
+          <span>Teléfono</span>
+          <span>Email</span>
         </div>
         <div class="contact-row">
           <div class="contact-area">Comercial</div>
           <div class="contact-cell"><input type="text"  id="com_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="text"  id="com_tel"   placeholder="Teléfono o email" /></div>
+          <div class="contact-cell"><input type="tel"   id="com_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="email" id="com_email" placeholder="correo@email.com" /></div>
         </div>
         <div class="contact-row">
           <div class="contact-area">Financiero</div>
           <div class="contact-cell"><input type="text"  id="fin_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="email" id="fin_email" placeholder="Email de facturación" /></div>
+          <div class="contact-cell"><input type="tel"   id="fin_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="email" id="fin_email" placeholder="correo@email.com" /></div>
         </div>
         <div class="contact-row">
           <div class="contact-area">Logística</div>
           <div class="contact-cell"><input type="text"  id="log_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="text"  id="log_tel"   placeholder="Teléfono o email" /></div>
+          <div class="contact-cell"><input type="tel"   id="log_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="email" id="log_email" placeholder="correo@email.com" /></div>
         </div>
         <div class="contact-row">
           <div class="contact-area">Pedidos</div>
           <div class="contact-cell"><input type="text"  id="ped_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="email" id="ped_email" placeholder="Email de pedidos" /></div>
+          <div class="contact-cell"><input type="tel"   id="ped_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="email" id="ped_email" placeholder="correo@email.com" /></div>
         </div>
       </div>
 
@@ -663,15 +823,18 @@
   <!-- ══════════════════════════════════════
        PASO 3 – DATOS BANCARIOS
   ══════════════════════════════════════ -->
-  <div class="section" id="step-3">
+  <div class="section" id="step-4">
     <div class="card">
-      <div class="section-eyebrow">Paso 4 de 5</div>
+      <div class="section-eyebrow">Paso 4 de 6</div>
       <div class="section-heading">Datos bancarios y forma de pago</div>
       <div style="display:flex;flex-direction:column;gap:1rem;">
 
         <div class="field">
-          <label>IBAN</label>
-          <input type="text" id="iban" placeholder="ES00 0000 0000 0000 0000 0000" autocomplete="off" />
+          <label>IBAN <span class="req">*</span></label>
+          <input type="text" id="iban" placeholder="ES00 0000 0000 0000 0000 0000" autocomplete="off"
+            oninput="formatIBAN(this)" maxlength="29" />
+          <span class="error-msg" id="err-iban">El número de cuenta es obligatorio y debe tener formato ES + 22 dígitos</span>
+          <span class="hint">Se formateará automáticamente: ES00 0000 0000 0000 0000 0000</span>
         </div>
 
         <div class="form-grid">
@@ -692,16 +855,6 @@
           </div>
         </div>
 
-        <div class="form-grid">
-          <div class="field">
-            <label>Días específicos de pago</label>
-            <input type="text" id="dias_pago" placeholder="Ej: 5 y 20 de cada mes" />
-          </div>
-          <div class="field">
-            <label>Plazo (días)</label>
-            <input type="number" id="plazo" placeholder="60" min="0" max="365" />
-          </div>
-        </div>
 
         <div class="toggle-row">
           <div>
@@ -721,20 +874,41 @@
   <!-- ══════════════════════════════════════
        PASO 4 – CONFIRMAR Y ENVIAR
   ══════════════════════════════════════ -->
-  <div class="section" id="step-4">
+  <div class="section" id="step-5">
     <div class="card">
-      <div class="section-eyebrow">Paso 5 de 5</div>
+      <div class="section-eyebrow">Paso 5 de 6</div>
       <div class="section-heading">Confirmar y enviar</div>
       <p style="font-size:13px;color:var(--gray-mid);margin-bottom:1.25rem;line-height:1.6;">
         Revisa que todo es correcto. Nuestro equipo procesará el alta en menos de 24&nbsp;h laborables.
       </p>
       <div id="resumen-container"></div>
-      <div class="privacy-note">
-        Al enviar este formulario, aceptas que Brandstory S.L.U. trate tus datos con el fin de gestionar la relación comercial, de acuerdo con el RGPD y la LOPD-GDD. Puedes ejercer tus derechos escribiendo a <a href="mailto:invoice@brandstory.eu" style="color:var(--black);">invoice@brandstory.eu</a>.
+      <div class="field" style="margin-bottom:1rem;">
+        <label>Firma del cliente <span class="req">*</span></label>
+        <div class="sig-wrap">
+          <canvas id="sig-canvas" width="1200" height="320"></canvas>
+          <div class="sig-placeholder-text" id="sig-placeholder">Firma aquí con el dedo o el ratón</div>
+          <div class="sig-bar">
+            <span class="sig-hint-text">Dibuja tu firma con el dedo (móvil) o con el ratón (ordenador)</span>
+            <button type="button" class="sig-clear-btn" onclick="clearSig()">Borrar</button>
+          </div>
+        </div>
+        <span class="error-msg" id="err-sig">La firma es obligatoria</span>
+      </div>
+
+      <div class="lopd-box">
+        <label class="lopd-check">
+          <input type="checkbox" id="lopd-check" />
+          <span class="lopd-text">
+            He leído y acepto que <strong>Brandstory S.L.U.</strong> (CIF B02795300) trate mis datos personales con el fin de gestionar la relación comercial, así como para comunicaciones de nuestro departamento comercial y de marketing. Los datos podrán ser compartidos internamente con dichos departamentos. En ningún caso serán cedidos a terceros sin tu consentimiento. Puedes ejercer tus derechos de acceso, rectificación, supresión y oposición escribiendo a <a href="mailto:orders@brandstory.eu" style="color:var(--black);font-weight:500;">orders@brandstory.eu</a>, de acuerdo con el <strong>RGPD (UE) 2016/679</strong> y la <strong>LOPD-GDD</strong>.
+          </span>
+        </label>
+        <div class="lopd-error" id="lopd-error">Debes aceptar la política de protección de datos para continuar.</div>
       </div>
     </div>
   </div>
 
+
+  <!-- ══════════════════════════════════════
   <!-- SUCCESS -->
   <div class="success-screen" id="success-screen">
     <div class="success-icon">
@@ -744,7 +918,7 @@
     </div>
     <h2>¡Alta enviada!</h2>
     <p>Hemos recibido tu ficha. Nuestro equipo la revisará y te confirmará el alta en menos de 24&nbsp;h en el correo o teléfono que nos has indicado.</p>
-    <p style="font-size:12px;color:var(--gray-mid);margin-top:1rem;">¿Dudas? <a href="mailto:invoice@brandstory.eu" style="color:var(--black);">invoice@brandstory.eu</a></p>
+    <p style="font-size:12px;color:var(--gray-mid);margin-top:1rem;">¿Dudas? <a href="mailto:orders@brandstory.eu" style="color:var(--black);">orders@brandstory.eu</a></p>
   </div>
 
   <!-- NAVEGACIÓN -->
@@ -759,7 +933,7 @@
 <script>
   /* ═══════ STATE ═══════ */
   let currentStep = 0;
-  const TOTAL = 5;
+  const TOTAL = 6;
   let formaPago = 'Giro 30 días';
   let sending = false;
 
@@ -770,7 +944,7 @@
     if (dir === 1) {
       if (!validateStep(currentStep)) return;
       if (currentStep === TOTAL - 1) { submitForm(); return; }
-      if (currentStep === TOTAL - 2) buildResumen();
+      if (currentStep === 4) buildResumen();
     }
 
     document.getElementById('step-' + currentStep).classList.remove('active');
@@ -779,6 +953,7 @@
     document.getElementById('step-' + currentStep).classList.add('active');
     updateNav();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (currentStep === 4) { setTimeout(_initSig, 60); }
   }
 
   function updateNav() {
@@ -800,38 +975,107 @@
   const chk = id => { const e = document.getElementById(id); return e ? e.checked : false; };
 
   /* ═══════ VALIDATION ═══════ */
-  const REQUIRED = {
-    0: ['razon_social','cif','tel_fiscal','dir_fiscal','cp_fiscal','pobl_fiscal'],
-    1: [], // delivery validated dynamically
-  };
+  /* helpers */
+  function markErr(id, show) {
+    const el = document.getElementById(id);
+    const field = el ? el.closest('.field') : null;
+    if (!field) return;
+    if (show) field.classList.add('has-error'); else field.classList.remove('has-error');
+  }
+  function showMsg(id, show) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'block' : 'none';
+  }
 
   function validateStep(step) {
     let ok = true;
-    const req = REQUIRED[step] || [];
-    req.forEach(id => {
-      const el = document.getElementById(id);
-      const field = el ? el.closest('.field') : null;
-      if (el && !el.value.trim()) {
-        if (field) field.classList.add('has-error');
-        ok = false;
-      } else if (field) {
-        field.classList.remove('has-error');
-      }
-    });
 
-    if (step === 1 && !chk('same_address')) {
-      ['dir_entrega','cp_entrega','pobl_entrega'].forEach(id => {
-        const el = document.getElementById(id);
-        const field = el ? el.closest('.field') : null;
-        if (el && !el.value.trim()) {
-          if (field) field.classList.add('has-error');
-          ok = false;
-        } else if (field) {
-          field.classList.remove('has-error');
-        }
-      });
+    if (step === 0) {
+      /* Razón social */
+      const rs = v('razon_social');
+      markErr('razon_social', !rs); if(!rs) ok=false;
+
+      /* CIF/NIF: letra+8dig | 8dig+letra | NIE (X/Y/Z+7dig+letra) */
+      const cif = v('cif');
+      const cifRe = /^[A-HJNP-SUVW][0-9]{7}[0-9A-J]$|^[0-9]{8}[A-Z]$|^[XYZ][0-9]{7}[A-Z]$/;
+      const cifBad = !cif || !cifRe.test(cif);
+      markErr('cif', cifBad); showMsg('err-cif', cifBad); if(cifBad) ok=false;
+
+      /* Teléfono: 9 dígitos, puede llevar +34 delante */
+      const tel = v('tel_fiscal').replace(/\s/g,'');
+      const telRe = /^(\+34)?[6789][0-9]{8}$/;
+      const telBad = !tel || !telRe.test(tel);
+      markErr('tel_fiscal', telBad); showMsg('err-tel', telBad); if(telBad) ok=false;
+
+      /* Email obligatorio y formato válido */
+      const em = v('email_fiscal');
+      const emRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emBad = !em || !emRe.test(em);
+      markErr('email_fiscal', emBad); showMsg('err-email', emBad); if(emBad) ok=false;
+
+      /* Dirección */
+      const dir = v('dir_fiscal');
+      markErr('dir_fiscal', !dir); if(!dir) ok=false;
+
+      /* CP: exactamente 5 dígitos */
+      const cp = v('cp_fiscal');
+      const cpBad = !cp || !/^[0-9]{5}$/.test(cp);
+      markErr('cp_fiscal', cpBad); if(cpBad) ok=false;
+
+      /* Población */
+      const pobl = v('pobl_fiscal');
+      markErr('pobl_fiscal', !pobl); if(!pobl) ok=false;
     }
+
+    if (step === 2 && !chk('same_address')) {
+      const dir = v('dir_entrega');
+      markErr('dir_entrega', !dir); if(!dir) ok=false;
+      const cp = v('cp_entrega');
+      const cpBad = !cp || !/^[0-9]{5}$/.test(cp);
+      markErr('cp_entrega', cpBad); if(cpBad) ok=false;
+      const pobl = v('pobl_entrega');
+      markErr('pobl_entrega', !pobl); if(!pobl) ok=false;
+    }
+
+    if (step === 4) {
+      /* IBAN obligatorio: ES + 22 dígitos */
+      const iban = v('iban').replace(/\s/g,'');
+      const ibanBad = !iban || !/^ES[0-9]{22}$/.test(iban);
+      markErr('iban', ibanBad);
+      showMsg('err-iban', ibanBad ? (iban ? 'El IBAN debe tener 24 caracteres (ES + 22 dígitos)' : 'El número de cuenta es obligatorio') : null);
+      if (ibanBad) ok = false;
+    }
+
+    if (step === 5) {
+      /* Firma obligatoria */
+      if (!_sigHasData) { showMsg('err-sig', true); ok = false; }
+      else              { showMsg('err-sig', false); }
+      /* LOPD tick */
+      const lopdOk = chk('lopd-check');
+      showMsg('lopd-error', !lopdOk); if(!lopdOk) ok=false;
+    }
+
     return ok;
+  }
+
+
+  /* ── IBAN formatter ── */
+  function formatIBAN(el) {
+    let raw = el.value.replace(/\s/g,'').toUpperCase();
+    // Insert spaces every 4 chars
+    let formatted = raw.match(/.{1,4}/g)?.join(' ') || raw;
+    el.value = formatted;
+    // Live validate length
+    const clean = raw.replace(/\s/g,'');
+    const err = document.getElementById('err-iban');
+    const field = el.closest('.field');
+    if (clean.length > 0 && !/^ES[0-9]{0,22}$/.test(clean)) {
+      field.classList.add('has-error'); if(err) err.style.display='block';
+    } else if (clean.length === 24 && /^ES[0-9]{22}$/.test(clean)) {
+      field.classList.remove('has-error'); if(err) err.style.display='none';
+    } else if (clean.length > 0 && clean.length < 24) {
+      field.classList.remove('has-error'); if(err) err.style.display='none';
+    }
   }
 
   /* Clear error on input */
@@ -843,6 +1087,10 @@
   });
 
   /* ═══════ SAME ADDRESS TOGGLE ═══════ */
+  function toggleSameCom(cb) {
+    document.getElementById('comercial-fields').style.display = cb.checked ? 'none' : 'flex';
+  }
+
   function toggleSameAddress(cb) {
     document.getElementById('delivery-fields').style.display = cb.checked ? 'none' : 'flex';
   }
@@ -870,18 +1118,23 @@
         ['Teléfono',     v('tel_fiscal')],
       ]},
       { title: 'Dirección de entrega', rows: deliveryRows },
+      { title: 'Datos comerciales', rows: [
+        ['Nombre comercial', v('nom_comercial') || '(igual que razón social)'],
+        ['Dirección', chk('same_comercial') ? 'Igual que la fiscal' : [v('dir_comercial'),v('cp_comercial'),v('pobl_comercial')].filter(Boolean).join(', ') || '—'],
+        ['Teléfono', v('tel_comercial') || '—'],
+        ['Email', v('email_comercial') || '—'],
+        ['Web / Redes', v('web_comercial') || '—'],
+      ]},
       { title: 'Contactos', rows: [
-        ['Comercial',  [v('com_nom'), v('com_tel')].filter(Boolean).join(' · ') || '—'],
-        ['Financiero', [v('fin_nom'), v('fin_email')].filter(Boolean).join(' · ') || '—'],
-        ['Logística',  [v('log_nom'), v('log_tel')].filter(Boolean).join(' · ') || '—'],
-        ['Pedidos',    [v('ped_nom'), v('ped_email')].filter(Boolean).join(' · ') || '—'],
+        ['Comercial',  [v('com_nom'), v('com_tel'), v('com_email')].filter(Boolean).join(' · ') || '—'],
+        ['Financiero', [v('fin_nom'), v('fin_tel'), v('fin_email')].filter(Boolean).join(' · ') || '—'],
+        ['Logística',  [v('log_nom'), v('log_tel'), v('log_email')].filter(Boolean).join(' · ') || '—'],
+        ['Pedidos',    [v('ped_nom'), v('ped_tel'), v('ped_email')].filter(Boolean).join(' · ') || '—'],
       ]},
       { title: 'Pago', rows: [
         ['Forma de pago', formaPago],
         ['IBAN',          v('iban') || '—'],
         ['Banco',         v('banco') || '—'],
-        ['Plazo',         v('plazo') ? v('plazo') + ' días' : '—'],
-        ['Días de pago',  v('dias_pago') || '—'],
         ['Rec. equivalencia', chk('recargo') ? 'Sí' : 'No'],
       ]},
     ];
@@ -895,6 +1148,58 @@
       html += '</div>';
     });
     document.getElementById('resumen-container').innerHTML = html;
+  }
+
+  /* ═══════ FIRMA ═══════ */
+  let _sigCanvas = null, _sigCtx = null, _sigDrawing = false, _sigHasData = false;
+
+  function _initSig() {
+    _sigCanvas = document.getElementById('sig-canvas');
+    if (!_sigCanvas || _sigCtx) return;
+    _sigCtx = _sigCanvas.getContext('2d');
+    _sigCtx.strokeStyle = '#0D0D0D';
+    _sigCtx.lineWidth = 2.5;
+    _sigCtx.lineCap = 'round';
+    _sigCtx.lineJoin = 'round';
+
+    const pos = (e) => {
+      const r = _sigCanvas.getBoundingClientRect();
+      const sx = _sigCanvas.width  / r.width;
+      const sy = _sigCanvas.height / r.height;
+      const s  = e.touches ? e.touches[0] : e;
+      return { x: (s.clientX - r.left) * sx, y: (s.clientY - r.top) * sy };
+    };
+    const start = (e) => {
+      e.preventDefault(); _sigDrawing = true;
+      const p = pos(e); _sigCtx.beginPath(); _sigCtx.moveTo(p.x, p.y);
+      document.getElementById('sig-placeholder').style.display = 'none';
+      showMsg('err-sig', false);
+    };
+    const draw = (e) => {
+      if (!_sigDrawing) return; e.preventDefault();
+      const p = pos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.stroke(); _sigHasData = true;
+    };
+    const stop = () => { _sigDrawing = false; };
+
+    _sigCanvas.addEventListener('mousedown',  start);
+    _sigCanvas.addEventListener('mousemove',  draw);
+    _sigCanvas.addEventListener('mouseup',    stop);
+    _sigCanvas.addEventListener('mouseleave', stop);
+    _sigCanvas.addEventListener('touchstart', start, { passive: false });
+    _sigCanvas.addEventListener('touchmove',  draw,  { passive: false });
+    _sigCanvas.addEventListener('touchend',   stop);
+  }
+
+  function clearSig() {
+    if (!_sigCtx) return;
+    _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+    _sigHasData = false;
+    document.getElementById('sig-placeholder').style.display = 'block';
+    showMsg('err-sig', false);
+  }
+
+  function getSigDataURL() {
+    return (_sigHasData && _sigCanvas) ? _sigCanvas.toDataURL('image/png') : null;
   }
 
   /* ═══════ SUBMIT → EMAILJS ═══════ */
@@ -925,6 +1230,7 @@
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">CIF / NIF</td><td style="font-weight:500;font-size:13px;">${v('cif')}</td></tr>
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Dirección fiscal</td><td style="font-weight:500;font-size:13px;">${v('dir_fiscal')}, ${v('cp_fiscal')} ${v('pobl_fiscal')} ${v('prov_fiscal')}</td></tr>
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Teléfono</td><td style="font-weight:500;font-size:13px;">${v('tel_fiscal')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Email</td><td style="font-weight:500;font-size:13px;">${v('email_fiscal')}</td></tr>
     </table>
 
     <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Dirección de entrega</h3>
@@ -935,12 +1241,20 @@
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;vertical-align:top;">Condiciones especiales</td><td style="font-weight:500;font-size:13px;background:#F7F7F5;padding:8px;border-radius:4px;">${v('condiciones') || '—'}</td></tr>
     </table>
 
+    <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Datos Comerciales</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">Nombre comercial</td><td style="font-weight:500;font-size:13px;">${v('nom_comercial') || '(igual que razón social)'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Dirección comercial</td><td style="font-size:13px;">${chk('same_comercial') ? 'Igual que la fiscal' : [v('dir_comercial'),v('cp_comercial'),v('pobl_comercial')].filter(Boolean).join(', ') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Teléfono</td><td style="font-size:13px;">${v('tel_comercial') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Email</td><td style="font-size:13px;">${v('email_comercial') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Web / Redes</td><td style="font-size:13px;">${v('web_comercial') || '—'}</td></tr>
+    </table>
     <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Contactos</h3>
     <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">Comercial</td><td style="font-size:13px;">${v('com_nom')} ${v('com_tel')}</td></tr>
-      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Financiero</td><td style="font-size:13px;">${v('fin_nom')} ${v('fin_email')}</td></tr>
-      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Logística</td><td style="font-size:13px;">${v('log_nom')} ${v('log_tel')}</td></tr>
-      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Pedidos</td><td style="font-size:13px;">${v('ped_nom')} ${v('ped_email')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;width:40%;">Comercial</td><td style="font-size:13px;">${[v('com_nom'),v('com_tel'),v('com_email')].filter(Boolean).join(' · ') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Financiero</td><td style="font-size:13px;">${[v('fin_nom'),v('fin_tel'),v('fin_email')].filter(Boolean).join(' · ') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Logística</td><td style="font-size:13px;">${[v('log_nom'),v('log_tel'),v('log_email')].filter(Boolean).join(' · ') || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Pedidos</td><td style="font-size:13px;">${[v('ped_nom'),v('ped_tel'),v('ped_email')].filter(Boolean).join(' · ') || '—'}</td></tr>
     </table>
 
     <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Datos bancarios y pago</h3>
@@ -949,13 +1263,11 @@
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Banco</td><td style="font-size:13px;">${v('banco') || '—'}</td></tr>
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">SWIFT</td><td style="font-size:13px;">${v('swift') || '—'}</td></tr>
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Forma de pago</td><td style="font-weight:500;font-size:13px;">${formaPago}</td></tr>
-      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Plazo</td><td style="font-size:13px;">${v('plazo') ? v('plazo') + ' días' : '—'}</td></tr>
-      <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Días de pago</td><td style="font-size:13px;">${v('dias_pago') || '—'}</td></tr>
       <tr><td style="padding:6px 0;color:#6B6B6B;font-size:13px;">Rec. equivalencia</td><td style="font-weight:500;font-size:13px;">${chk('recargo') ? 'Sí' : 'No'}</td></tr>
     </table>
 
-    <div style="margin-top:24px;padding:12px;background:#F7F7F5;border-radius:6px;font-size:11px;color:#6B6B6B;">
-      Enviado desde el formulario de alta de Brandstory · ${new Date().toLocaleString('es-ES')}
+
+      ✓ Protección de datos aceptada &nbsp;·&nbsp; Enviado desde el formulario de alta de Brandstory · ${new Date().toLocaleString('es-ES')}
     </div>
   </div>
 </div>`;
@@ -985,15 +1297,12 @@
       sheetsData.append('banco',         v('banco'));
       sheetsData.append('swift',         v('swift'));
       sheetsData.append('forma_pago',    formaPago);
-      sheetsData.append('plazo',         v('plazo'));
-      sheetsData.append('dias_pago',     v('dias_pago'));
       sheetsData.append('recargo',       chk('recargo') ? 'Sí' : 'No');
       sheetsData.append('fecha',         new Date().toLocaleString('es-ES'));
 
       fetch(SHEETS_SCRIPT_URL, { method: 'POST', body: sheetsData })
         .catch(() => {}); // Si falla Sheets no bloqueamos — el email ya fue
 
-      document.getElementById('step-4').classList.remove('active');
       document.getElementById('nav-bar').style.display = 'none';
       document.getElementById('progress-wrap').style.display = 'none';
       document.getElementById('success-screen').classList.add('active');
