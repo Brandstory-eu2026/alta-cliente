@@ -690,7 +690,7 @@
           <div class="form-grid">
             <div class="field">
               <label>Teléfono de entrega</label>
-              <input type="tel" id="tel_entrega" placeholder="600 000 000" />
+              <input type="text" id="tel_entrega" placeholder="600 000 000" />
             </div>
             <div class="field">
               <label>Horario de recepción</label>
@@ -754,11 +754,11 @@
           <div class="form-grid">
             <div class="field">
               <label>Teléfono comercial</label>
-              <input type="tel" id="tel_comercial" placeholder="600 000 000" inputmode="numeric" />
+              <input type="text" id="tel_comercial" placeholder="600 000 000" inputmode="numeric" />
             </div>
             <div class="field">
               <label>Email comercial</label>
-              <input type="email" id="email_comercial" placeholder="tienda@ejemplo.com" />
+              <input type="text" id="email_comercial" placeholder="tienda@ejemplo.com" />
             </div>
           </div>
         </div>
@@ -794,26 +794,26 @@
         <div class="contact-row">
           <div class="contact-area">Comercial</div>
           <div class="contact-cell"><input type="text"  id="com_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="tel"   id="com_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
-          <div class="contact-cell"><input type="email" id="com_email" placeholder="correo@email.com" /></div>
+          <div class="contact-cell"><input type="text" id="com_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="text" id="com_email" placeholder="correo@email.com" /></div>
         </div>
         <div class="contact-row">
           <div class="contact-area">Financiero</div>
           <div class="contact-cell"><input type="text"  id="fin_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="tel"   id="fin_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
-          <div class="contact-cell"><input type="email" id="fin_email" placeholder="correo@email.com" /></div>
+          <div class="contact-cell"><input type="text" id="fin_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="text" id="fin_email" placeholder="correo@email.com" /></div>
         </div>
         <div class="contact-row">
           <div class="contact-area">Logística</div>
           <div class="contact-cell"><input type="text"  id="log_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="tel"   id="log_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
-          <div class="contact-cell"><input type="email" id="log_email" placeholder="correo@email.com" /></div>
+          <div class="contact-cell"><input type="text" id="log_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="text" id="log_email" placeholder="correo@email.com" /></div>
         </div>
         <div class="contact-row">
           <div class="contact-area">Pedidos</div>
           <div class="contact-cell"><input type="text"  id="ped_nom"   placeholder="Nombre y apellidos" /></div>
-          <div class="contact-cell"><input type="tel"   id="ped_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
-          <div class="contact-cell"><input type="email" id="ped_email" placeholder="correo@email.com" /></div>
+          <div class="contact-cell"><input type="text" id="ped_tel"   placeholder="600 000 000" inputmode="numeric" /></div>
+          <div class="contact-cell"><input type="text" id="ped_email" placeholder="correo@email.com" /></div>
         </div>
       </div>
 
@@ -953,7 +953,7 @@
     document.getElementById('step-' + currentStep).classList.add('active');
     updateNav();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (currentStep === 4) { setTimeout(_initSig, 60); }
+    if (currentStep === 5) { setTimeout(_initSig, 60); }
   }
 
   function updateNav() {
