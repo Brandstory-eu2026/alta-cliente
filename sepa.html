@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orden de Domiciliación SEPA — Brandstory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0D0D0D;
+      --dark:   #2C2C2C;
+      --mid:    #6B6B6B;
+      --light:  #E0E0DC;
+      --fill:   #F4F4F0;
+      --white:  #FFFFFF;
+      --bg:     #F0F0EC;
+      --radius: 6px;
+      --font:   'DM Sans', sans-serif;
+      --mono:   'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--black);
+      min-height: 100vh;
+      padding: 2rem 1rem 5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SHELL ── */
+    .shell {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: var(--black);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-mark span {
+      color: white;
+      font-family: Georgia, serif;
+      font-size: 26px; line-height: 1;
+      margin-top: 2px;
+    }
+    .header-titles .title-es { font-size: 15px; font-weight: 500; color: var(--black); }
+    .header-titles .title-en { font-size: 11px; color: var(--mid); margin-top: 2px; }
+    .header-ref {
+      text-align: right;
+      font-size: 11px;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+    .divider {
+      height: 1.5px;
+      background: var(--black);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    /* ── SECTION BAR ── */
+    .sec-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--dark);
+      padding: 9px 16px;
+    }
+    .sec-bar-es {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: white;
+    }
+    .sec-bar-en {
+      font-size: 9px;
+      color: rgba(255,255,255,0.5);
+      font-style: italic;
+    }
+
+    /* ── FIXED FIELD (acreedor) ── */
+    .fixed-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .fixed-field {
+      padding: 10px 16px 10px;
+      border-bottom: 0.5px solid var(--light);
+    }
+    .fixed-field.full   { grid-column: 1 / -1; }
+    .fixed-field.alt    { background: var(--fill); }
+    .fixed-field-label  {
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .fixed-field-label-en {
+      font-size: 8px;
+      color: #BBBBBB;
+      font-style: italic;
+      margin-left: 4px;
+    }
+    .fixed-field-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--black);
+      line-height: 1.4;
+    }
+    .fixed-field-ref {
+      font-size: 11px;
+      color: var(--mid);
+      font-style: italic;
+    }
+
+    /* ── LEGAL TEXT ── */
+    .legal-block {
+      padding: 16px 16px;
+      border-top: 0.5px solid var(--light);
+    }
+    .legal-es {
+      font-size: 12px;
+      color: var(--black);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .legal-en {
+      font-size: 11px;
+      color: var(--mid);
+      line-height: 1.6;
+      font-style: italic;
+      padding-top: 10px;
+      border-top: 0.5px dashed var(--light);
+    }
+
+    /* ── DEBTOR FIELDS ── */
+    .fields-wrap {
+      padding: 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .field-label-en {
+      font-size: 9px;
+      color: #BBBBBB;
+      font-style: italic;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-left: 4px;
+    }
+    .field input, .field textarea {
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--black);
+      background: var(--white);
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      padding: 10px 13px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .field input::placeholder { color: #CCCCCA; }
+    .field input:focus, .field textarea:focus {
+      border-color: var(--black);
+      box-shadow: 0 0 0 3px rgba(13,13,13,0.07);
+    }
+    .field input.error { border-color: #C0392B; }
+    .field .error-msg {
+      font-size: 11px;
+      color: #C0392B;
+      display: none;
+    }
+    .field.has-error input  { border-color: #C0392B; }
+    .field.has-error .error-msg { display: block; }
+
+    /* ── IBAN GRID ── */
+    .iban-grid {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      gap: 2px;
+      margin-top: 4px;
+    }
+    .iban-box {
+      aspect-ratio: 1;
+      border: 1px solid var(--light);
+      border-radius: 3px;
+      background: var(--fill);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--black);
+      text-transform: uppercase;
+      cursor: text;
+      transition: border-color 0.1s;
+      position: relative;
+      min-width: 0;
+    }
+    .iban-box.hint { color: #CCCCCA; }
+    .iban-box input {
+      position: absolute; inset: 0;
+      opacity: 0; width: 100%; height: 100%;
+      cursor: text; border: none; background: none;
+    }
+    .iban-display {
+      width: 100%;
+      padding: 10px 13px;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--black);
+      background: var(--fill);
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      letter-spacing: 0.15em;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .iban-display::placeholder { color: #CCCCCA; letter-spacing: 0.05em; }
+    .iban-display:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(13,13,13,0.07); }
+    .iban-hint { font-size: 10px; color: var(--mid); margin-top: 4px; font-style: italic; }
+
+    /* ── TIPO PAGO ── */
+    .tipo-pago {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--fill);
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+    }
+    .tipo-pago-label { font-size: 13px; font-weight: 500; }
+    .tipo-pago-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      background: var(--black);
+      color: white;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    /* ── FIRMA ── */
+    .sig-wrap {
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    #sig-canvas {
+      display: block;
+      width: 100%;
+      height: 180px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .sig-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      border-top: 0.5px solid var(--light);
+      background: var(--fill);
+    }
+    .sig-hint-txt { font-size: 11px; color: var(--mid); }
+    .sig-placeholder {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 13px; color: var(--light);
+      pointer-events: none; user-select: none;
+      white-space: nowrap;
+    }
+    .btn-clear {
+      font-family: var(--font); font-size: 12px;
+      color: var(--mid); background: none;
+      border: 0.5px solid var(--light); border-radius: var(--radius);
+      padding: 4px 12px; cursor: pointer;
+    }
+    .btn-clear:hover { color: var(--black); border-color: var(--dark); }
+
+    /* ── AVISO LEGAL FINAL ── */
+    .legal-final {
+      padding: 14px 16px;
+      background: var(--fill);
+      border-top: 0.5px solid var(--light);
+      text-align: center;
+    }
+    .legal-final p {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--black);
+      line-height: 1.6;
+      margin-bottom: 4px;
+    }
+    .legal-final p.en {
+      font-size: 10px;
+      color: var(--mid);
+      font-weight: 400;
+      font-style: italic;
+      margin-bottom: 0;
+    }
+
+    /* ── SUBMIT ── */
+    .submit-wrap { margin-top: 1.5rem; display: flex; justify-content: center; }
+    .btn-submit {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 13px 40px;
+      background: var(--black);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .btn-submit:hover   { background: var(--dark); }
+    .btn-submit:active  { transform: scale(0.98); }
+    .btn-submit:disabled {
+      background: var(--light); color: var(--mid); cursor: not-allowed;
+    }
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      margin-right: 6px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SUCCESS ── */
+    .success-screen {
+      display: none; text-align: center;
+      padding: 3.5rem 1.5rem;
+      background: var(--white);
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+    }
+    .success-screen.active { display: block; }
+    .success-icon {
+      width: 60px; height: 60px; background: var(--black);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 1.5rem;
+    }
+    .success-icon svg { width: 26px; height: 26px; }
+    .success-screen h2 { font-size: 22px; font-weight: 500; margin-bottom: 0.75rem; }
+    .success-screen p  { font-size: 13px; color: var(--mid); line-height: 1.7; max-width: 380px; margin: 0 auto; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 500px) {
+      .fixed-grid { grid-template-columns: 1fr; }
+      .fixed-field.full { grid-column: 1; }
+      .header-ref { display: none; }
+      .iban-grid { grid-template-columns: repeat(12, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark"><span>B</span></div>
+      <div class="header-titles">
+        <div class="title-es">Orden de domiciliación de adeudo directo SEPA</div>
+        <div class="title-en">SEPA Direct Debit Mandate</div>
+      </div>
+    </div>
+    <div class="header-ref">
+      invoice@brandstory.eu<br>
+      orders@brandstory.eu
+    </div>
+  </header>
+  <div class="divider"></div>
+
+  <div id="main-form">
+
+    <!-- ══════════════════════════════════════
+         BLOQUE ACREEDOR
+    ══════════════════════════════════════ -->
+    <div class="card">
+      <div class="sec-bar">
+        <span class="sec-bar-es">A cumplimentar por el acreedor</span>
+        <span class="sec-bar-en">To be completed by the creditor</span>
+      </div>
+
+      <div class="fixed-grid">
+        <div class="fixed-field">
+          <div class="fixed-field-label">Referencia de la orden <span class="fixed-field-label-en">/ Mandate reference</span></div>
+          <div class="fixed-field-ref">Se asignará por Brandstory S.L.U.</div>
+        </div>
+        <div class="fixed-field alt">
+          <div class="fixed-field-label">Identificador del acreedor <span class="fixed-field-label-en">/ Creditor Identifier</span></div>
+          <div class="fixed-field-value">ES54000B02795300</div>
+        </div>
+        <div class="fixed-field full">
+          <div class="fixed-field-label">Nombre del acreedor <span class="fixed-field-label-en">/ Creditor's name</span></div>
+          <div class="fixed-field-value">BRANDSTORY S.L.U.</div>
+        </div>
+        <div class="fixed-field full alt">
+          <div class="fixed-field-label">Dirección <span class="fixed-field-label-en">/ Address</span></div>
+          <div class="fixed-field-value">Calle Virgilio 25, planta baja. Edificio Ayessa</div>
+        </div>
+        <div class="fixed-field">
+          <div class="fixed-field-label">Código postal — Población — Provincia <span class="fixed-field-label-en">/ Postal Code — City — Town</span></div>
+          <div class="fixed-field-value">28223 — Pozuelo de Alarcón — Madrid</div>
+        </div>
+        <div class="fixed-field alt">
+          <div class="fixed-field-label">País <span class="fixed-field-label-en">/ Country</span></div>
+          <div class="fixed-field-value">España</div>
+        </div>
+      </div>
+
+      <!-- Texto legal -->
+      <div class="legal-block">
+        <div class="legal-es">
+          Mediante la firma de esta orden de domiciliación, el deudor autoriza (A) al acreedor a enviar instrucciones a la entidad del deudor para adeudar su cuenta y (B) a la entidad para efectuar los adeudos en su cuenta siguiendo las instrucciones del acreedor. Como parte de sus derechos, el deudor está legitimado al reembolso por su entidad en los términos y condiciones del contrato suscrito con la misma. La solicitud de reembolso deberá efectuarse dentro de las ocho semanas que siguen a la fecha de adeudo en cuenta. Puede obtener información adicional sobre sus derechos en su entidad financiera.
+        </div>
+        <div class="legal-en">
+          By signing this mandate form, you authorise (A) the Creditor to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from the Creditor. As part of your rights, you are entitled to a refund from your bank under the terms and conditions of your agreement with your bank. A refund must be claimed within eight weeks starting from the date on which your account was debited. Your rights are explained in a statement that you can obtain from your bank.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         BLOQUE DEUDOR
+    ══════════════════════════════════════ -->
+    <div class="card">
+      <div class="sec-bar">
+        <span class="sec-bar-es">A cumplimentar por el deudor</span>
+        <span class="sec-bar-en">To be completed by the debtor</span>
+      </div>
+
+      <div class="fields-wrap">
+
+        <div class="field">
+          <label class="field-label">Nombre del deudor/es (titular/es de la cuenta de cargo) <span class="field-label-en">/ Debtor's name (account holder/s)</span> <span style="color:#C0392B;">*</span></label>
+          <input type="text" id="nombre_deudor" placeholder="Nombre completo o razón social" />
+          <span class="error-msg">Este campo es obligatorio</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Dirección del deudor <span class="field-label-en">/ Address of the debtor</span> <span style="color:#C0392B;">*</span></label>
+          <input type="text" id="dir_deudor" placeholder="Calle, número, piso..." />
+          <span class="error-msg">Este campo es obligatorio</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem 1rem;">
+          <div class="field">
+            <label class="field-label">Código postal <span style="color:#C0392B;">*</span></label>
+            <input type="text" id="cp_deudor" placeholder="28000" maxlength="5" inputmode="numeric" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+          <div class="field">
+            <label class="field-label">Población <span class="field-label-en">/ City</span> <span style="color:#C0392B;">*</span></label>
+            <input type="text" id="pobl_deudor" placeholder="Madrid" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+          <div class="field">
+            <label class="field-label">Provincia <span class="field-label-en">/ Town</span> <span style="color:#C0392B;">*</span></label>
+            <input type="text" id="prov_deudor" placeholder="Madrid" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem 1rem;">
+          <div class="field">
+            <label class="field-label">País del deudor <span class="field-label-en">/ Country of the debtor</span> <span style="color:#C0392B;">*</span></label>
+            <input type="text" id="pais_deudor" placeholder="España" value="España" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+          <div class="field">
+            <label class="field-label">Swift BIC <span class="field-label-en">/ Swift BIC (8 u 11 posiciones)</span> <span style="color:#C0392B;">*</span></label>
+            <input type="text" id="swift_bic" placeholder="CAIXESBBXXX" maxlength="11"
+              oninput="this.value=this.value.toUpperCase()" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+        </div>
+
+        <!-- IBAN -->
+        <div class="field">
+          <label class="field-label">Número de cuenta — IBAN <span class="field-label-en">/ Account number — IBAN</span> <span style="color:#C0392B;">*</span></label>
+          <input class="iban-display" type="text" id="iban_deudor"
+            placeholder="ES00 0000 0000 0000 0000 0000"
+            maxlength="29"
+            oninput="formatIBAN(this)"
+          />
+          <div class="iban-hint">En España el IBAN consta de 24 posiciones comenzando siempre por ES &nbsp;/&nbsp; Spanish IBAN of 24 positions always starting ES</div>
+          <span class="error-msg" id="err-iban">El IBAN debe tener 24 caracteres (ES + 22 dígitos)</span>
+        </div>
+
+        <!-- Tipo de pago — FIJO -->
+        <div class="field">
+          <label class="field-label">Tipo de pago <span class="field-label-en">/ Type of payment</span></label>
+          <div class="tipo-pago">
+            <span class="tipo-pago-label">Pago recurrente &nbsp;/&nbsp; Recurrent payment</span>
+            <span class="tipo-pago-badge">Obligatorio / Mandatory</span>
+          </div>
+        </div>
+
+        <!-- Fecha — Localidad -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem 1rem;">
+          <div class="field">
+            <label class="field-label">Fecha <span class="field-label-en">/ Date</span> <span style="color:#C0392B;">*</span></label>
+            <input type="date" id="fecha_firma" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+          <div class="field">
+            <label class="field-label">Localidad <span class="field-label-en">/ Location</span> <span style="color:#C0392B;">*</span></label>
+            <input type="text" id="localidad_firma" placeholder="Madrid" />
+            <span class="error-msg">Obligatorio</span>
+          </div>
+        </div>
+
+        <!-- Firma -->
+        <div class="field">
+          <label class="field-label">Firma del deudor <span class="field-label-en">/ Signature of the debtor</span> <span style="color:#C0392B;">*</span></label>
+          <div class="sig-wrap">
+            <canvas id="sig-canvas" width="1200" height="360"></canvas>
+            <div class="sig-placeholder" id="sig-placeholder">Firma aquí con el dedo o el ratón &nbsp;/&nbsp; Sign here</div>
+            <div class="sig-bar">
+              <span class="sig-hint-txt">Dedo en móvil · Ratón en ordenador</span>
+              <button type="button" class="btn-clear" onclick="clearSig()">Borrar / Clear</button>
+            </div>
+          </div>
+          <span class="error-msg" id="err-sig">La firma es obligatoria</span>
+        </div>
+
+      </div>
+
+      <!-- Aviso legal final -->
+      <div class="legal-final">
+        <p>TODOS LOS CAMPOS HAN DE SER CUMPLIMENTADOS OBLIGATORIAMENTE.</p>
+        <p>UNA VEZ FIRMADA ESTA ORDEN DE DOMICILIACIÓN DEBE SER ENVIADA AL ACREEDOR PARA SU CUSTODIA.</p>
+        <p class="en">ALL GAPS ARE MANDATORY. ONCE THIS MANDATE HAS BEEN SIGNED MUST BE SENT TO CREDITOR FOR STORAGE.</p>
+      </div>
+    </div>
+
+    <!-- ENVIAR -->
+    <div class="submit-wrap">
+      <button class="btn-submit" id="btn-submit" onclick="submitSEPA()">
+        Enviar orden SEPA →
+      </button>
+    </div>
+
+  </div><!-- /main-form -->
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2>¡Orden SEPA enviada!</h2>
+    <p>Hemos recibido tu orden de domiciliación. La procesaremos y la tendrás archivada en nuestro sistema.</p>
+    <p style="margin-top:0.75rem;font-size:12px;">¿Dudas? <a href="mailto:orders@brandstory.eu" style="color:var(--black);">orders@brandstory.eu</a></p>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- ══════════════════════════════════════ EMAILJS ══════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  /* ── CONFIG — sustituir con valores reales de EmailJS ── */
+  const EMAILJS_PUBLIC_KEY  = 'X33JaBeBrDWByhwPm';
+  const EMAILJS_SERVICE_ID  = 'service_z5cnxd8';
+  const EMAILJS_TEMPLATE_ID = 'template_v0t9r6t';
+  const DESTINO_EMAIL       = 'invoice@brandstory.eu';
+  (function(){ emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); })();
+
+  /* ── HELPERS ── */
+  const v   = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  const err = (id, show) => {
+    const el = document.getElementById(id);
+    const f  = el ? el.closest('.field') : null;
+    if (f) show ? f.classList.add('has-error') : f.classList.remove('has-error');
+  };
+  const msg = (id, show) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'block' : 'none';
+  };
+
+  /* ── IBAN FORMAT ── */
+  function formatIBAN(el) {
+    let raw = el.value.replace(/\s/g,'').toUpperCase();
+    el.value = raw.match(/.{1,4}/g)?.join(' ') || raw;
+    const clean = raw.replace(/\s/g,'');
+    const bad = clean.length > 0 && !/^ES[0-9]{0,22}$/.test(clean);
+    const done = /^ES[0-9]{22}$/.test(clean);
+    const f = el.closest('.field');
+    if (bad) { f.classList.add('has-error'); msg('err-iban', true); }
+    else if (done) { f.classList.remove('has-error'); msg('err-iban', false); }
+    else { f.classList.remove('has-error'); msg('err-iban', false); }
+  }
+
+  /* ── FIRMA ── */
+  let _sc = null, _sx = null, _sd = false, _sh = false;
+
+  (function initSig() {
+    _sc = document.getElementById('sig-canvas');
+    if (!_sc) return;
+    _sx = _sc.getContext('2d');
+    _sx.strokeStyle = '#0D0D0D'; _sx.lineWidth = 2.5;
+    _sx.lineCap = 'round'; _sx.lineJoin = 'round';
+    const pos = e => {
+      const r  = _sc.getBoundingClientRect();
+      const sx = _sc.width / r.width, sy = _sc.height / r.height;
+      const s  = e.touches ? e.touches[0] : e;
+      return { x: (s.clientX - r.left) * sx, y: (s.clientY - r.top) * sy };
+    };
+    const start = e => {
+      e.preventDefault(); _sd = true;
+      const p = pos(e); _sx.beginPath(); _sx.moveTo(p.x, p.y);
+      document.getElementById('sig-placeholder').style.display = 'none';
+      msg('err-sig', false);
+    };
+    const draw = e => {
+      if (!_sd) return; e.preventDefault();
+      const p = pos(e); _sx.lineTo(p.x, p.y); _sx.stroke(); _sh = true;
+    };
+    const stop = () => { _sd = false; };
+    _sc.addEventListener('mousedown',  start);
+    _sc.addEventListener('mousemove',  draw);
+    _sc.addEventListener('mouseup',    stop);
+    _sc.addEventListener('mouseleave', stop);
+    _sc.addEventListener('touchstart', start, { passive: false });
+    _sc.addEventListener('touchmove',  draw,  { passive: false });
+    _sc.addEventListener('touchend',   stop);
+  })();
+
+  function clearSig() {
+    if (!_sx) return;
+    _sx.clearRect(0, 0, _sc.width, _sc.height);
+    _sh = false;
+    document.getElementById('sig-placeholder').style.display = 'block';
+    msg('err-sig', false);
+  }
+
+  /* ── VALIDATE ── */
+  function validate() {
+    let ok = true;
+
+    const req = ['nombre_deudor','dir_deudor','cp_deudor','pobl_deudor','prov_deudor',
+                 'pais_deudor','swift_bic','fecha_firma','localidad_firma'];
+    req.forEach(id => {
+      if (!v(id)) { err(id, true); ok = false; }
+      else err(id, false);
+    });
+
+    // CP
+    if (v('cp_deudor') && !/^[0-9]{5}$/.test(v('cp_deudor'))) { err('cp_deudor', true); ok = false; }
+
+    // IBAN
+    const iban = v('iban_deudor').replace(/\s/g,'');
+    if (!iban || !/^ES[0-9]{22}$/.test(iban)) {
+      err('iban_deudor', true); msg('err-iban', true); ok = false;
+    } else { err('iban_deudor', false); msg('err-iban', false); }
+
+    // Firma
+    if (!_sh) { msg('err-sig', true); ok = false; }
+    else msg('err-sig', false);
+
+    return ok;
+  }
+
+  /* ── SUBMIT ── */
+  let sending = false;
+  function submitSEPA() {
+    if (sending) return;
+    if (!validate()) { document.querySelector('.has-error')?.scrollIntoView({ behavior:'smooth', block:'center' }); return; }
+    sending = true;
+    const btn = document.getElementById('btn-submit');
+    btn.innerHTML = '<span class="spinner"></span>Enviando...'; btn.disabled = true;
+
+    const sigImg = _sh && _sc ? _sc.toDataURL('image/png') : '';
+    const ibanFmt = v('iban_deudor');
+
+    const html = `
+<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#0D0D0D;">
+  <div style="background:#0D0D0D;padding:18px 24px;border-radius:8px 8px 0 0;display:flex;align-items:center;gap:12px;">
+    <span style="background:white;color:#0D0D0D;font-weight:bold;font-size:18px;padding:4px 10px;border-radius:4px;">B</span>
+    <span style="color:white;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Orden SEPA Recibida</span>
+  </div>
+  <div style="padding:24px;border:1px solid #E0E0DC;border-top:none;border-radius:0 0 8px 8px;">
+
+    <h3 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Acreedor</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;width:40%;">Nombre</td><td style="font-weight:500;font-size:13px;">BRANDSTORY S.L.U.</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">Identificador</td><td style="font-size:13px;">ES54000B02795300</td></tr>
+    </table>
+
+    <h3 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 12px;">Deudor</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;width:40%;">Nombre</td><td style="font-weight:500;font-size:13px;">${v('nombre_deudor')}</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">Dirección</td><td style="font-size:13px;">${v('dir_deudor')}, ${v('cp_deudor')} ${v('pobl_deudor')} ${v('prov_deudor')}</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">País</td><td style="font-size:13px;">${v('pais_deudor')}</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">Swift BIC</td><td style="font-weight:500;font-size:13px;">${v('swift_bic')}</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">IBAN</td><td style="font-weight:500;font-size:14px;font-family:monospace;letter-spacing:2px;">${ibanFmt}</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">Tipo de pago</td><td style="font-weight:500;font-size:13px;">Pago recurrente</td></tr>
+      <tr><td style="padding:5px 0;color:#6B6B6B;font-size:12px;">Fecha y lugar</td><td style="font-size:13px;">${v('fecha_firma')} — ${v('localidad_firma')}</td></tr>
+    </table>
+
+    <h3 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#6B6B6B;margin:0 0 10px;">Firma del deudor</h3>
+    <img src="${sigImg}" style="border:1px solid #E0E0DC;border-radius:4px;max-width:320px;width:100%;background:#fff;display:block;margin-bottom:20px;" />
+
+    <div style="padding:12px;background:#F7F7F5;border-radius:6px;font-size:11px;color:#6B6B6B;">
+      Orden SEPA recibida · Brandstory S.L.U. · ${new Date().toLocaleString('es-ES')}
+    </div>
+  </div>
+</div>`;
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:       DESTINO_EMAIL,
+      subject:        'Orden SEPA — ' + v('nombre_deudor'),
+      razon_social:   v('nombre_deudor'),
+      contenido_html: html,
+    })
+    .then(() => {
+      document.getElementById('main-form').style.display = 'none';
+      document.getElementById('success-screen').classList.add('active');
+    })
+    .catch(() => {
+      btn.innerHTML = 'Enviar orden SEPA →'; btn.disabled = false; sending = false;
+      alert('Ha habido un problema al enviar. Por favor escríbenos a orders@brandstory.eu');
+    });
+  }
+</script>
+</body>
+</html>
